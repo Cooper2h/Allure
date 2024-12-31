@@ -77,4 +77,27 @@ class DeliveryTest {
         $("[data-test-id=phone] .input__sub")
                 .shouldHave(exactText("Неверный формат номера мобильного телефона"));
     }
+    @Test
+    @DisplayName("Should successfully plan meeting with name containing 'Ё'")
+    void shouldSuccessfulPlanMeetingWithYo() {
+
+        DataGenerator.UserInfo userWithYo = new DataGenerator.UserInfo(
+                validUser.getCity(),
+                "Ёлкин Иван",
+                validUser.getPhone()
+        );
+
+        $("[data-test-id=city] input").setValue(userWithYo.getCity());
+        $("[data-test-id=date] input").sendKeys(Keys.chord(Keys.SHIFT, Keys.HOME), Keys.BACK_SPACE);
+        $("[data-test-id=date] input").setValue(firstMeetingDate);
+        $("[data-test-id=name] input").setValue(userWithYo.getName());
+        $("[data-test-id=phone] input").setValue(userWithYo.getPhone());
+        $("[data-test-id=agreement]").click();
+        $(byText("Запланировать")).click();
+
+        $(byText("Успешно!")).shouldBe(visible, Duration.ofSeconds(15));
+        $("[data-test-id='success-notification'] .notification__content")
+                .shouldHave(exactText("Встреча успешно запланирована на " + firstMeetingDate))
+                .shouldBe(visible);
+    }
 }
